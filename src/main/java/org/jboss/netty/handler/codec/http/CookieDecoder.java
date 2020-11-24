@@ -99,7 +99,7 @@ public class CookieDecoder {
                 value = "";
             }
 
-            Cookie c = new DefaultCookie(name, value);
+            DefaultCookie c = new DefaultCookie(name, value);
 
             boolean discard = false;
             boolean secure = false;
@@ -109,6 +109,7 @@ public class CookieDecoder {
             String domain = null;
             String path = null;
             int maxAge = Integer.MIN_VALUE;
+            CookieHeaderNames.SameSite sameSite = null;
             List<Integer> ports = new ArrayList<Integer>(2);
 
             for (int j = i + 1; j < names.size(); j++, i++) {
@@ -145,6 +146,8 @@ public class CookieDecoder {
                     maxAge = Integer.parseInt(value);
                 } else if (CookieHeaderNames.VERSION.equalsIgnoreCase(name)) {
                     version = Integer.parseInt(value);
+                } else if (CookieHeaderNames.SAMESITE.equalsIgnoreCase(name)) {
+                    sameSite = CookieHeaderNames.SameSite.of(value);
                 } else if (CookieHeaderNames.PORT.equalsIgnoreCase(name)) {
                     String[] portList = StringUtil.split(value, COMMA);
                     for (String s1: portList) {
@@ -165,6 +168,7 @@ public class CookieDecoder {
             c.setDomain(domain);
             c.setSecure(secure);
             c.setHttpOnly(httpOnly);
+            c.setSameSite(sameSite);
             if (version > 0) {
                 c.setComment(comment);
             }

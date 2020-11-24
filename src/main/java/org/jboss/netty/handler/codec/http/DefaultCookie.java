@@ -15,6 +15,8 @@
  */
 package org.jboss.netty.handler.codec.http;
 
+import org.jboss.netty.handler.codec.http.CookieHeaderNames.SameSite;
+
 import java.util.Collections;
 import java.util.Set;
 import java.util.TreeSet;
@@ -39,6 +41,7 @@ public class DefaultCookie implements Cookie {
     private int version;
     private boolean secure;
     private boolean httpOnly;
+    private SameSite sameSite;
 
     /**
      * Creates a new cookie with the specified name and value.
@@ -176,6 +179,26 @@ public class DefaultCookie implements Cookie {
         }
     }
 
+    /**
+     * Checks to see if this {@link Cookie} can be sent along cross-site requests.
+     * For more information, please look
+     * <a href="https://tools.ietf.org/html/draft-ietf-httpbis-rfc6265bis-05">here</a>
+     * @return <b>same-site-flag</b> value
+     */
+    public SameSite getSameSite() {
+        return sameSite;
+    }
+
+    /**
+     * Determines if this this {@link Cookie} can be sent along cross-site requests.
+     * For more information, please look
+     *  <a href="https://tools.ietf.org/html/draft-ietf-httpbis-rfc6265bis-05">here</a>
+     * @param sameSite <b>same-site-flag</b> value
+     */
+    public void setSameSite(SameSite sameSite) {
+        this.sameSite = sameSite;
+    }
+
     public int getMaxAge() {
         return maxAge;
     }
@@ -309,6 +332,9 @@ public class DefaultCookie implements Cookie {
         }
         if (isHttpOnly()) {
             buf.append(", HTTPOnly");
+        }
+        if (getSameSite() != null) {
+            buf.append(", SameSite=").append(getSameSite());
         }
         return buf.toString();
     }

@@ -143,6 +143,16 @@ public class CookieEncoder {
                 sb.append((char) HttpConstants.SEMICOLON);
                 sb.append((char) HttpConstants.SP);
             }
+            if (cookie instanceof DefaultCookie) {
+                DefaultCookie c = (DefaultCookie) cookie;
+                if (c.getSameSite() != null) {
+                    if (cookie.getVersion() > 0) {
+                        add(sb, CookieHeaderNames.SAMESITE, c.getSameSite().name());
+                    } else {
+                        addUnquoted(sb, CookieHeaderNames.SAMESITE, c.getSameSite().name());
+                    }
+                }
+            }
             if (cookie.getVersion() >= 1) {
                 if (cookie.getComment() != null) {
                     add(sb, CookieHeaderNames.COMMENT, cookie.getComment());
